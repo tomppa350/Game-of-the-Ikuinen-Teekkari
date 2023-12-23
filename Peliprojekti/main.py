@@ -124,6 +124,9 @@ def start_screen():
             pygame.display.flip()
 
 def win_screen():
+    complete_time = timedelta(days=5*365)-(date_deadline-date_current)
+    txt["complete_time"] = font.render(f"Tutkinto suoritettu: {round(complete_time.days/365, 1)} vuodessa.", True, 0)
+    txt["complete_time"] = pygame.transform.scale_by(txt["complete_time"], 2)
     while True:
 
         mousepos = pygame.mouse.get_pos()
@@ -136,6 +139,7 @@ def win_screen():
         screen.blit(txt["lopeta"], (500, 555))
         for i in range(len(txt["win_screen"])):
                 screen.blit(txt["win_screen"][i], (150, 150+40*i))
+        screen.blit(txt["complete_time"], (150, 500))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -148,6 +152,63 @@ def win_screen():
 
         FPS.tick(60)
         pygame.display.flip()
+    
+def lose_screen():
+    txt["reset"] = font.render("Reset", True, 1)
+    txt["reset"] = pygame.transform.scale_by(txt["reset"], 2)
+    while True:
+
+        mousepos = pygame.mouse.get_pos()
+
+        pygame.draw.rect(screen, (255, 255, 255), (100, 100, 1080, 520))
+        pygame.draw.rect(screen, (47, 54, 153), (100, 100, 1080, 520), 6)
+        pygame.draw.rect(screen, color["grey"], (660, 550, 120, 50), 0, 5)
+        pygame.draw.rect(screen, color["grey"], (500, 550, 120, 50), 0, 5)
+        screen.blit(txt["reset"], (673, 555))
+        screen.blit(txt["lopeta"], (500, 555))
+        for i in range(len(txt["lose_screen"])):
+                screen.blit(txt["lose_screen"][i], (150, 150+40*i))
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                exit()
+            if event.type == pygame.MOUSEBUTTONDOWN and pygame.Rect(660, 550, 120, 50).collidepoint(mousepos):
+                txt["reset"] = font.render("Reset", True, 1)
+                txt["reset"] = pygame.transform.scale_by(txt["reset"], 1.3)
+                reset()
+                load()
+                return None
+            if event.type == pygame.MOUSEBUTTONDOWN and pygame.Rect(500, 550, 120, 50).collidepoint(mousepos):
+                txt["reset"] = font.render("Reset", True, 1)
+                txt["reset"] = pygame.transform.scale_by(txt["reset"], 2)
+                reset()
+                exit()
+
+        FPS.tick(60)
+        pygame.display.flip()
+
+def kick_screen():
+        global overlay
+        while True:
+
+            mousepos = pygame.mouse.get_pos()
+
+            pygame.draw.rect(screen, (255, 255, 255), (100, 100, 1080, 520))
+            pygame.draw.rect(screen, (47, 54, 153), (100, 100, 1080, 520), 6)
+            pygame.draw.rect(screen, color["grey"], (580, 550, 120, 50), 0, 5)
+            screen.blit(txt["lopeta"], (583, 555))
+            for i in range(len(txt["kick_screen"])):
+                screen.blit(txt["kick_screen"][i], (150, 150+40*i))
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    exit()
+                if event.type == pygame.MOUSEBUTTONDOWN and pygame.Rect(590, 550, 100, 50).collidepoint(mousepos):
+                    reset()
+                    exit()
+
+            FPS.tick(60)
+            pygame.display.flip()
 
 # Upgrades
 upgrade = [
@@ -182,8 +243,12 @@ for i in range(len(txt["main_screen"])):
             txt["main_screen"][i] = pygame.transform.scale_by(txt["main_screen"][i], 1.5)
 for i in range(len(txt["win_screen"])):
             txt["win_screen"][i] = pygame.transform.scale_by(txt["win_screen"][i], 1.5)
+for i in range(len(txt["lose_screen"])):
+            txt["lose_screen"][i] = pygame.transform.scale_by(txt["lose_screen"][i], 1.5)
+for i in range(len(txt["kick_screen"])):
+            txt["kick_screen"][i] = pygame.transform.scale_by(txt["kick_screen"][i], 1.5)
 
-
+# Hard reset (empty savedata.txt)
 if is_empty("savedata.txt") == True:
     reset()
     load()
@@ -270,6 +335,11 @@ while True:
     txt["deadline"] = pygame.transform.scale_by(txt["deadline"], 2)
     txt["tj_time"] = font.render(str(f"{tj.days} päivää"), True, 2)
     txt["tj_time"] = pygame.transform.scale_by(txt["tj_time"], 2)
+    if rank_current >= 6:
+        txt["deadline"] = font.render("-.-.-", True, 0)
+        txt["deadline"] = pygame.transform.scale_by(txt["deadline"], 2)
+        txt["tj_time"] = font.render("- päivää", True, 2)
+        txt["tj_time"] = pygame.transform.scale_by(txt["tj_time"], 2)
     
     if upgrade_mode == "1x":
         txt["upgrade0_level"] = font.render(f"Multitaskaus {convert_num(upgrade[0]["level"])}", True, 0)
@@ -320,8 +390,17 @@ while True:
         screen.blit(txt[f"upgrade{i}_level"], (830, 100*(i+1)+5))
         screen.blit(txt[f"upgrade{i}_cost"], (830, 100*(i+1)+50))
 
+    # Tutorial
     if overlay == True:
         start_screen()
+
+    # Game over menu
+    if tj.days <= 0 and rank_current < 6:
+        lose_screen()
+    
+    # Secret ending
+    if score >= 1e+66:
+         kick_screen()
 
     # Clock
     date_current += timedelta(minutes=73)

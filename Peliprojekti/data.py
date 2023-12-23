@@ -3,6 +3,7 @@ import pygame
 pygame.font.init()
 font = pygame.font.Font("font.ttf")
 
+# Longer text elements for overlay screens
 sentence = {
     "main_screen": [
         "Hei, ja tervetuloa opiskelemaan meille tänne Turun yliopistoon!",
@@ -24,6 +25,25 @@ sentence = {
         "Huom! diplomi-insinööriä korkeammille tutkinnoille ei ole asetettu konkreettista",
         "aikarajaa. Älä kuitenkaan opiskele kuolemaasi asti, sillä se olisi erittäin",
         "kuormittavaa valtion taloudelle!"
+    ],
+    "lose_screen": [
+        ": (",
+        " ",
+        "Voi ei! Näyttää pahasti siltä, että et onnistunut suorittamaan diplomi-insinööri-",
+        "tutkintoasi määräajassa, ja yliopisto on päättänyt evätä kaikki opintosuorituksesi.",
+        " ",
+        "Voit joko aloittaa uuden koulutuksen painamalla [reset], tai luovuttaa painamalla",
+        "[lopeta]."
+    ],
+    "kick_screen": [
+        "Näyttäisi siltä, että olet käyttänyt sen verran aikaa opiskeluun, että se uhkaa haitata",
+        "jo valtiomme taloutta. Emme voi antaa moisen jatkua, joten kansia on hartaan",
+        "pohdinnan jälkeen tullut siihen tulokseen, että teidät on potkittava pihalle",
+        "laitoksestamme. Eiköhän jo nimittäin noin korkealla tutkinnolla rupea",
+        "parempipalkkaisiakin töitä löytymään.",
+        " ",
+        "Onnea ja menestystä",
+        "Kanslia"
     ]
 }
 
@@ -47,7 +67,9 @@ txt = {
     "opiskeluoikeus": font.render("Opiskeluoikeus päättyy:", True, 0),
     "tj": font.render("Tänään jäljellä (TJ):", True, 0),
     "main_screen": [font.render(i, True, 0) for i in sentence["main_screen"]],
-    "win_screen": [font.render(i, True, 0) for i in sentence["win_screen"]]
+    "win_screen": [font.render(i, True, 0) for i in sentence["win_screen"]],
+    "lose_screen": [font.render(i, True, 0) for i in sentence["lose_screen"]],
+    "kick_screen": [font.render(i, True, 0) for i in sentence["kick_screen"]]
 }
 
 # Useful color values
